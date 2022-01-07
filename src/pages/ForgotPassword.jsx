@@ -1,9 +1,9 @@
 import React from 'react'
 
-function ForgotPassword() {
+const ForgotPassword = () => {
   return (
     <div>
-      Forgot Password
+
     </div>
   )
 }
