@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase.config';
-
 import { Link, useNavigate } from 'react-router-dom';
 
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg';
 import visibilityIcon from '../assets/svg/visibilityIcon.svg';
+
+import { useAuth } from '../contexts/AuthContext';
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,50 +18,28 @@ function Signup() {
 
   const { name, email, password } = formData;
 
+  const { signup, updateName, updateDB } = useAuth();
+
   const navigate = useNavigate();
 
-  const handleNameChange = (e) => {
+  const handleChange = (e) => {
     setFormData({
       ...formData,
-      name: e.target.value,
-    });
-  }
-
-  const handleEmailChange = (e) => {
-    setFormData({
-      ...formData,
-      email: e.target.value,
-    });
-  }
-
-  const handlePasswordChange = (e) => {
-    setFormData({
-      ...formData,
-      password: e.target.value,
+      [e.target.name]: e.target.value,
     });
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
     try {
-      const auth = getAuth();
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(user);
-      updateProfile(auth.currentUser, {
-        displayName: name,
-      });
+      e.preventDefault();
 
-      const userData = {
-        name,
-        email,
-        timestamp: serverTimestamp(),
-      };
-
-      await setDoc(doc(db, 'users', user.uid), userData);
+      const user = await signup(email, password);
+      await updateName(name);
+      updateDB(user.uid, name, email);
 
       navigate('/');
     } catch (error) {
+      console.error(error);
       toast.error('There was an error creating your account. Please try again.');
     }
   }
@@ -81,7 +57,7 @@ function Signup() {
             name="name"
             id="name"
             value={name}
-            onChange={handleNameChange}
+            onChange={handleChange}
             placeholder='Name' />
 
           <input
@@ -90,7 +66,7 @@ function Signup() {
             name="email"
             id="email"
             value={email}
-            onChange={handleEmailChange}
+            onChange={handleChange}
             placeholder='Email' />
 
           <div className="passwordFieldContainer">
@@ -100,7 +76,7 @@ function Signup() {
               name="password"
               id="password"
               value={password}
-              onChange={handlePasswordChange}
+              onChange={handleChange}
               placeholder='Password'
               maxLength={12} />
             <img

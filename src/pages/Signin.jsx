@@ -18,17 +18,10 @@ function Signin() {
   const { email, password } = formData;
   const navigate = useNavigate();
 
-  const handleEmailChange = (e) => {
+  const handleChange = (e) => {
     setFormData({
       ...formData,
-      email: e.target.value,
-    });
-  }
-
-  const handlePasswordChange = (e) => {
-    setFormData({
-      ...formData,
-      password: e.target.value,
+      [e.target.name]: e.target.value,
     });
   }
 
@@ -57,7 +50,7 @@ function Signin() {
             name="email"
             id="email"
             value={email}
-            onChange={handleEmailChange}
+            onChange={handleChange}
             placeholder='Email'
             autoComplete='off' />
           <div className="passwordFieldContainer">
@@ -65,7 +58,7 @@ function Signin() {
               className='passwordInput'
               type={showPassword ? 'text' : 'password'}
               name="password" id="password" value={password}
-              onChange={handlePasswordChange}
+              onChange={handleChange}
               placeholder='Password'
               maxLength={12} autoComplete='off' />
             <img

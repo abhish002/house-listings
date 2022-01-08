@@ -12,22 +12,27 @@ import ForgotPassword from './pages/ForgotPassword';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 
+import { AuthProvider } from './contexts/AuthContext';
+import { useContext } from 'react/cjs/react.development';
+
 function App() {
   return (
     <div className="App">
-      <Router>
-        <Routes>
-          <Route path="/" element={<Explore />} />
-          <Route path="/offers" element={<Offers />} />
-          <Route path="/signin" element={<Signin />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<PrivateRoute />}>
-            <Route path='/profile' element={<Profile />} />
-          </Route>
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-        </Routes>
-        <Navbar />
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Explore />} />
+            <Route path="/offers" element={<Offers />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<PrivateRoute />}>
+              <Route path='/profile' element={<Profile />} />
+            </Route>
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+          </Routes>
+          <Navbar />
+        </Router>
+      </AuthProvider>
       <ToastContainer
         position="top-center"
         autoClose={5000}
