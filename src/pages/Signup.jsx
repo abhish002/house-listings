@@ -18,7 +18,7 @@ function Signup() {
 
   const { name, email, password } = formData;
 
-  const { signup, updateName, updateDB } = useAuth();
+  const { signup, updateName, saveUserDetailsToDB } = useAuth();
 
   const navigate = useNavigate();
 
@@ -29,14 +29,22 @@ function Signup() {
     });
   }
 
+  /**
+   * Functiuon to handle user signup form submit.
+   * @param {React.FormEvent<HTMLFormElement>} e onSubmit event
+   */
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
 
+      // create user in firebase
       const user = await signup(email, password);
       await updateName(name);
-      updateDB(user.uid, name, email);
 
+      // save user details to firestore
+      saveUserDetailsToDB(user.uid, name, email);
+
+      // redirect to home page after signup
       navigate('/');
     } catch (error) {
       console.error(error);

@@ -1,30 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+
 import { toast } from 'react-toastify';
-import { getAuth, updateProfile } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from '../firebase.config';
 
 import { useNavigate } from 'react-router-dom';
 
+import { useAuth } from '../contexts/AuthContext';
+
 function Profile() {
-  const auth = getAuth();
+  const [isEdit, setIsEdit] = useState(false);
+  const navigate = useNavigate();
+  const {
+    signout,
+    currentUser,
+    updateName,
+    updateUserDetails
+  } = useAuth();
 
   const [formData, setFormData] = useState({
-    name: auth.currentUser.displayName,
-    email: auth.currentUser.email,
+    name: currentUser.displayName,
+    email: currentUser.email,
   });
+
   const { name, email } = formData;
 
-  const [isEdit, setIsEdit] = useState(false);
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-
-  }, [])
-
   const handleLogout = () => {
-    auth.signOut();
+    signout();
     navigate('/signin');
   }
 
@@ -37,19 +37,13 @@ function Profile() {
 
   const handleSubmit = async () => {
     try {
-      // update displayName
-      if (auth.currentUser.displayName !== name) {
-        await updateProfile(auth.currentUser, {
-          displayName: name,
-        });
+      // update displayName in profile
+      if (currentUser.displayName !== name) {
+        await updateName(name);
       }
 
       // update firestore user data
-      const userRef = doc(db, 'users', auth.currentUser.uid);
-      await updateDoc(userRef, {
-        name,
-      });
-
+      await updateUserDetails({ displayName: name });
       toast.success('Profile updated successfully.');
     } catch (error) {
       toast.error('Cannot update profile. please try again later.');
@@ -90,11 +84,11 @@ function Profile() {
               type="text"
               name="email"
               id="email"
-              className={!isEdit ? 'profileEmail' : 'profileEmailActive'}
+              className={'profileEmail'}
               placeholder='Name'
               value={email}
               onChange={handleChange}
-              disabled={!isEdit} />
+              disabled={true} />
           </form>
         </div>
       </main>

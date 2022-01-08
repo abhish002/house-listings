@@ -5,8 +5,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  onAuthStateChanged,
 } from "firebase/auth";
-import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { setDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase.config';
 
 // create the context
@@ -23,8 +24,10 @@ export const AuthProvider = ({ children }) => {
   const auth = getAuth();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      setCurrentUser(user);
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) {
+        setCurrentUser(user);
+      }
       setIsLoading(false);
     });
 
@@ -65,7 +68,14 @@ export const AuthProvider = ({ children }) => {
     return user;
   }
 
-  const updateDB = (uid, name, email) => {
+  /**
+   * Function to handle sign out.
+   */
+  const signout = () => {
+    auth.signOut();
+  }
+
+  const saveUserDetailsToDB = (uid, name, email) => {
     // create user object to save in db
     const userData = {
       name,
@@ -77,24 +87,36 @@ export const AuthProvider = ({ children }) => {
     setDoc(doc(db, 'users', uid), userData);
   }
 
+  /**
+   * Function to update user profile in db.
+   * @param {String} uid user ID
+   * @param {{displayName, email}} userData user object with property to update
+   */
+  const updateUserDetails = async (userData = {}) => {
+    const userRef = doc(db, 'users', auth.currentUser.uid);
+    await updateDoc(userRef, userData);
+  }
+
+  /**
+   * Function to update user's display name.
+   * @param {String} name user's profile name
+   */
   const updateName = async (name) => {
     await updateProfile(auth.currentUser, {
       displayName: name,
-    });
-  }
-
-  const updateEmail = async (email) => {
-    currentUser.updateEmail(email);
+    });    
   }
 
   // values shared between all components
   const value = {
     signup,
     signin,
+    signout,
     updateName,
-    updateEmail,
-    updateDB,
+    saveUserDetailsToDB,
+    updateUserDetails,
     isLoading,
+    currentUser,
   };
 
   return (
