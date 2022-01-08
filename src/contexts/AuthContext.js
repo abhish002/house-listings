@@ -1,6 +1,11 @@
 import { useState, useEffect, useContext, createContext } from 'react';
 
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase.config';
 
@@ -27,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   }, [auth]);
 
   /**
-   * Function to handle sign in with email and password.
+   * Function to handle sign up with email and password.
    * @param {String} email email address
    * @param {String} password password
    * @returns
@@ -37,7 +42,25 @@ export const AuthProvider = ({ children }) => {
     const { user } = await createUserWithEmailAndPassword(
       auth,
       email,
-      password);
+      password,
+    );
+
+    return user;
+  }
+
+  /**
+   * Function to handle sign in with email and password.
+   * @param {String} email email address
+   * @param {String} password password
+   * @returns 
+   */
+  const signin = async (email, password) => {
+    // sign in with email and password
+    const { user } = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
 
     return user;
   }
@@ -67,6 +90,7 @@ export const AuthProvider = ({ children }) => {
   // values shared between all components
   const value = {
     signup,
+    signin,
     updateName,
     updateEmail,
     updateDB,

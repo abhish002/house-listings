@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 import { Link, useNavigate } from 'react-router-dom';
 
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useAuth } from '../contexts/AuthContext';
 
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg';
 import visibilityIcon from '../assets/svg/visibilityIcon.svg';
@@ -18,6 +18,8 @@ function Signin() {
   const { email, password } = formData;
   const navigate = useNavigate();
 
+  const { signin} = useAuth();
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -28,9 +30,7 @@ function Signin() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const auth = getAuth();
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
-      console.log(user);
+      const user = await signin(email, password);
       user && navigate('/');
     } catch (error) {
       toast.error('Invalid email or password. Please try again.');
