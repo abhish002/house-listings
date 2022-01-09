@@ -40,11 +40,10 @@ function Profile() {
       // update displayName in profile
       if (currentUser.displayName !== name) {
         await updateName(name);
+        // update firestore user data
+        await updateUserDetails({ displayName: name });
+        toast.success('Profile updated successfully.');
       }
-
-      // update firestore user data
-      await updateUserDetails({ displayName: name });
-      toast.success('Profile updated successfully.');
     } catch (error) {
       toast.error('Cannot update profile. please try again later.');
     }
