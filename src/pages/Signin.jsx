@@ -18,7 +18,7 @@ function Signin() {
   const { email, password } = formData;
   const navigate = useNavigate();
 
-  const { signin} = useAuth();
+  const { signin } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -31,7 +31,10 @@ function Signin() {
     try {
       e.preventDefault();
       const user = await signin(email, password);
-      user && navigate('/');
+      if (user) {
+        toast.success('Signin successful');
+        navigate('/');
+      }
     } catch (error) {
       toast.error('Invalid email or password. Please try again.');
     }
@@ -67,7 +70,7 @@ function Signin() {
               className="showPassword"
               onClick={() => setShowPassword((prevState) => !prevState)} />
           </div>
-          <Link to='/forgot-passwword' className='forgotPasswordLink'>forgot password?</Link>
+          <Link to='/forgot-password' className='forgotPasswordLink'>forgot password?</Link>
           <div className="signInBar">
             <p className="signInText">Sign In</p>
             <button className="signInButton">

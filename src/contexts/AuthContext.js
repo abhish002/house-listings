@@ -4,6 +4,8 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut,
   updateProfile,
   onAuthStateChanged,
 } from "firebase/auth";
@@ -27,7 +29,10 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
         setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
       }
+
       setIsLoading(false);
     });
 
@@ -71,8 +76,16 @@ export const AuthProvider = ({ children }) => {
   /**
    * Function to handle sign out.
    */
-  const signout = () => {
-    auth.signOut();
+  const logOut = () => {
+    signOut(auth);
+  }
+
+  /**
+   * Function to handle reset password.
+   * @param {String} email email address
+   */
+  const sendPasswordResetEmailLink = async (email) => {
+    await sendPasswordResetEmail(auth, email);
   }
 
   const saveUserDetailsToDB = (uid, name, email) => {
@@ -104,14 +117,15 @@ export const AuthProvider = ({ children }) => {
   const updateName = async (name) => {
     await updateProfile(auth.currentUser, {
       displayName: name,
-    });    
+    });
   }
 
   // values shared between all components
   const value = {
     signup,
     signin,
-    signout,
+    logOut,
+    sendPasswordResetEmailLink,
     updateName,
     saveUserDetailsToDB,
     updateUserDetails,

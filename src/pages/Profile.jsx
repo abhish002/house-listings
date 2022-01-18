@@ -10,7 +10,7 @@ function Profile() {
   const [isEdit, setIsEdit] = useState(false);
   const navigate = useNavigate();
   const {
-    signout,
+    logOut,
     currentUser,
     updateName,
     updateUserDetails
@@ -24,8 +24,8 @@ function Profile() {
   const { name, email } = formData;
 
   const handleLogout = () => {
-    signout();
-    navigate('/signin');
+    logOut();
+    navigate('/');
   }
 
   const handleChange = (e) => {
