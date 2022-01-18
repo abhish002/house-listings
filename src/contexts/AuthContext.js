@@ -8,8 +8,16 @@ import {
   signOut,
   updateProfile,
   onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
 } from "firebase/auth";
-import { setDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { db } from '../firebase.config';
 
 // create the context
@@ -73,6 +81,14 @@ export const AuthProvider = ({ children }) => {
     return user;
   }
 
+  const signinWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+
+    const { user } = await signInWithPopup(auth, provider);
+
+    return user;
+  }
+
   /**
    * Function to handle sign out.
    */
@@ -86,6 +102,16 @@ export const AuthProvider = ({ children }) => {
    */
   const sendPasswordResetEmailLink = async (email) => {
     await sendPasswordResetEmail(auth, email);
+  }
+
+  /**
+   * Function to get user snapshot from firebase.
+   * @param {String} uid user id
+   * @returns 
+   */
+  const getUserFromDB = async (uid) => {
+    const userDocRef = doc(db, 'users', uid);
+    return await getDoc(userDocRef);
   }
 
   const saveUserDetailsToDB = (uid, name, email) => {
@@ -124,11 +150,13 @@ export const AuthProvider = ({ children }) => {
   const value = {
     signup,
     signin,
+    signinWithGoogle,
     logOut,
     sendPasswordResetEmailLink,
     updateName,
     saveUserDetailsToDB,
     updateUserDetails,
+    getUserFromDB,
     isLoading,
     currentUser,
   };

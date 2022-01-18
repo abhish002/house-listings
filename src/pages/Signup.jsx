@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import OAuth from '../components/OAuth';
 
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -103,7 +104,7 @@ function Signup() {
             </button>
           </div>
         </form>
-        {/* Google O-Auth componenent */}
+        <OAuth />
         <Link to='/signin' className='registerLink'>Sign In Instead</Link>
       </div>
     </>
