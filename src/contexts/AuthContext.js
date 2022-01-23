@@ -11,6 +11,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
+
 import {
   doc,
   setDoc,
@@ -18,6 +19,7 @@ import {
   updateDoc,
   serverTimestamp,
 } from 'firebase/firestore';
+
 import { db } from '../firebase.config';
 
 // create the context
